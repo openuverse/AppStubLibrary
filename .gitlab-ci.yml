@@ -1,0 +1,107 @@
+# appstublibrary GitLab CI/CD 配置
+#
+# ============================================================
+# 权限规则：
+# - 管理员 @sn06473 @sn06009：所有权限，支持直接 push
+# - CI Bot @project_336_bot：仅能修改 index.json
+# - 所有用户：必须通过 MR，只能修改自己的 stubs/{app_id}/
+#
+# Executor: docker
+# Image: python:3.13
+# ============================================================
+
+image: python:3.13
+
+stages:
+  - validate
+  - deploy
+
+# 默认配置
+default:
+  tags:
+    - stub
+
+# ============================================================
+# 权限验证任务
+# push 和 MR 都要验证
+# ============================================================
+validate-ownership:
+  stage: validate
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event" # MR 时执行
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH # Push 到 master 时执行
+  before_script:
+    # 配置子模块访问凭证（使用 Deploy Token）
+    - git config --global url."http://${DEPLOY_TOKEN}@bjrdgit.rigoltech.com/".insteadOf "git@bjrdgit.rigoltech.com:"
+    - git config --global --list | grep -i insteadof  # 调试：显示替换规则
+    - git submodule update --init --recursive
+  script:
+    - echo "Validating file permissions..."
+    - python admin/scripts/main/validate-ownership.py
+  allow_failure: false
+
+# ============================================================
+# Manifest 格式验证任务
+# 检查必填字段: id, name, tags, latest, maintainers
+# ============================================================
+validate-manifest:
+  stage: validate
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+  before_script:
+    - git config --global url."http://${DEPLOY_TOKEN}@bjrdgit.rigoltech.com/".insteadOf "git@bjrdgit.rigoltech.com:"
+    - git submodule update --init --recursive
+  script:
+    - echo "Validating manifest.json files..."
+    - python admin/scripts/main/validate-manifest.py
+  allow_failure: false
+
+# ============================================================
+# 接口文件验证任务
+# ============================================================
+validate-files:
+  stage: validate
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+  before_script:
+    - git config --global url."http://${DEPLOY_TOKEN}@bjrdgit.rigoltech.com/".insteadOf "git@bjrdgit.rigoltech.com:"
+    - git submodule update --init --recursive
+  script:
+    - echo "Validating stub structure..."
+    - python admin/scripts/main/validate-files.py
+  allow_failure: false
+
+# ============================================================
+# 自动生成配置任务
+# 合并后自动生成 index.json 和 CODEOWNERS
+# 仅在 master 分支且 stubs/ 目录有变化时执行
+# 这样可以避免 CI 自动推送 index.json 后再次触发
+# ============================================================
+generate-configs:
+  stage: deploy
+  # 使用 resource_group 确保同一时间只有一个 deploy 任务运行
+  # 避免并发推送导致的冲突
+  resource_group: deploy-configs
+  rules:
+    # 只有 stubs/ 目录有变化时才执行
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      changes:
+        - stubs/**/*
+  before_script:
+    # 配置 Git 用户信息
+    - git config user.email "ci@appstub.local"
+    - git config user.name "appstub-ci"
+    # 配置子模块访问凭证（只读，用于克隆）
+    - git config --global url."http://${DEPLOY_TOKEN}@bjrdgit.rigoltech.com/".insteadOf "git@bjrdgit.rigoltech.com:"
+    - git submodule update --init --recursive
+  script:
+    - echo "Generating config files..."
+    - echo "1. Generating index.json..."
+    - python admin/scripts/main/generate-index.py
+    - echo "2. Generating CODEOWNERS..."
+    - python admin/scripts/main/generate-codeowners.py
+    - echo "3. Committing and pushing changes..."
+    - python admin/scripts/main/commit-changes.py --stub-token="${STUB_WRITE_TOKEN}" --admin-token="${PROJECT_WRITE_TOKEN}"
+  allow_failure: false

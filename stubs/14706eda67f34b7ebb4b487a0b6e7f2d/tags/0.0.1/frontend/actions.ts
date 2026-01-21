@@ -1,0 +1,260 @@
+/**
+ * Actions API Client
+ *
+ * Generated at: 2026-01-20 10:50:07
+ * SDK Version: 0.12.3
+ * App Name: AppManager
+ * App Version: 0.1.5
+ * Author: RIGOL Technology
+ * Description: The app manager to browse, install, update, launch, and uninstall applications.
+ *
+ * This file is auto-generated. Do not edit manually.
+ */
+
+import { RestAPIClient, type DeepPartial } from '@rigol/uv-api'
+
+
+/**
+ * 创建任务的请求模型.
+ */
+export interface TaskCreate {
+  title?: string
+  description?: string | undefined
+  completed: boolean
+  priority: number
+  user_id?: number | undefined
+}
+
+/**
+ * 删除任务的请求模型.
+ */
+export interface TaskDelete {
+  id?: number
+}
+
+/**
+ * 读取任务的响应模型.
+ */
+export interface TaskRead {
+  id?: number
+  title?: string
+  description?: string | undefined
+  completed?: boolean
+  priority?: number
+  user_id?: number | undefined
+  created_at?: string
+  updated_at?: string | undefined
+}
+
+/**
+ * 更新任务的请求模型.
+ */
+export interface TaskUpdate {
+  title?: string | undefined
+  description?: string | undefined
+  completed?: boolean | undefined
+  priority?: number | undefined
+  user_id?: number | undefined
+}
+
+/**
+ * 创建用户的请求模型.
+ */
+export interface UserCreate {
+  name?: string
+  email?: string
+  age?: number | undefined
+}
+
+/**
+ * 删除用户的请求模型.
+ */
+export interface UserDelete {
+  id?: number
+}
+
+/**
+ * 读取用户的响应模型.
+ */
+export interface UserRead {
+  id?: number
+  name?: string
+  email?: string
+  age?: number | undefined
+  created_at?: string
+  updated_at?: string | undefined
+}
+
+/**
+ * 更新用户的请求模型.
+ */
+export interface UserUpdate {
+  name?: string | undefined
+  email?: string | undefined
+  age?: number | undefined
+}
+
+/**
+ * API Client
+ *
+ * Auto-generated from backend actions
+ */
+export class Client extends RestAPIClient {
+  constructor() {
+    super()
+  }
+
+  /**
+   * get app info
+   */
+  async get_app_config() {
+    return await this.action<any>('get_app_config')
+  }
+
+  /**
+   * get app action details
+   */
+  async get_all_action_details() {
+    return await this.action<any>('get_all_action_details')
+  }
+
+  /**
+   * get all attribute groups
+   */
+  async get_all_attribute_groups() {
+    return await this.action<any>('get_all_attribute_groups')
+  }
+
+  /**
+   * trigger once attributes snapshot push for a group
+   */
+  async trig_attributes_snapshot(group_name: string) {
+    return await this.action<boolean>('trig_attributes_snapshot', { group_name })
+  }
+
+  /**
+   * get attribute value by path
+   */
+  async get_attribute(attribute_path: string) {
+    return await this.action<any>('get_attribute', { attribute_path })
+  }
+
+  /**
+   * set attribute value by path
+   */
+  async set_attribute(attribute_path: string, value: any) {
+    return await this.action<boolean>('set_attribute', { attribute_path, value })
+  }
+
+  /**
+   * 创建新用户
+   */
+  async create_user(user: UserCreate) {
+    return await this.action<UserRead>('create_user', { user })
+  }
+
+  /**
+   * 获取所有用户列表
+   */
+  async get_users() {
+    return await this.action<UserRead[]>('get_users')
+  }
+
+  /**
+   * 根据ID获取用户
+   */
+  async get_user(user_id: number) {
+    return await this.action<UserRead>('get_user', { user_id })
+  }
+
+  /**
+   * 更新用户信息
+   */
+  async update_user(user_id: number, user_update: DeepPartial<UserUpdate>) {
+    return await this.action<UserRead>('update_user', { user_id, user_update })
+  }
+
+  /**
+   * 删除用户
+   */
+  async delete_user(user_delete: UserDelete) {
+    return await this.action<Record<string, string>>('delete_user', { user_delete })
+  }
+
+  /**
+   * 创建新任务
+   */
+  async create_task(task: TaskCreate) {
+    return await this.action<TaskRead>('create_task', { task })
+  }
+
+  /**
+   * 获取所有任务列表
+   */
+  async get_tasks() {
+    return await this.action<TaskRead[]>('get_tasks')
+  }
+
+  /**
+   * 根据ID获取任务
+   */
+  async get_task(task_id: number) {
+    return await this.action<TaskRead>('get_task', { task_id })
+  }
+
+  /**
+   * 更新任务信息
+   */
+  async update_task(task_id: number, task_update: DeepPartial<TaskUpdate>) {
+    return await this.action<TaskRead>('update_task', { task_id, task_update })
+  }
+
+  /**
+   * 删除任务
+   */
+  async delete_task(task_delete: TaskDelete) {
+    return await this.action<Record<string, string>>('delete_task', { task_delete })
+  }
+
+  /**
+   * 应用列表
+   */
+  async apps_list(scope: string, search: string, instrument_type: string, fee_type: string, install_status: string, page: number, page_size: number) {
+    return await this.action<Record<string, any>>('apps_list', { scope, search, instrument_type, fee_type, install_status, page, page_size })
+  }
+
+  /**
+   * 应用详情
+   */
+  async app_detail(app_id: string) {
+    return await this.action<Record<string, any>>('app_detail', { app_id })
+  }
+
+  /**
+   * 本地安装应用
+   */
+  async app_local_install(filename: string, file_content: any) {
+    return await this.action<Record<string, any>>('app_local_install', { filename, file_content }, {
+      headers: { 'X-UV-Action-Timeout': '60000' },
+    })
+  }
+
+  /**
+   * 本地更新应用
+   */
+  async app_local_update(app_id: string, filename: string, file_content: any) {
+    return await this.action<Record<string, any>>('app_local_update', { app_id, filename, file_content }, {
+      headers: { 'X-UV-Action-Timeout': '60000' },
+    })
+  }
+
+  /**
+   * 卸载本地应用
+   */
+  async app_local_uninstall(app_id: string) {
+    return await this.action<Record<string, any>>('app_local_uninstall', { app_id }, {
+      headers: { 'X-UV-Action-Timeout': '30000' },
+    })
+  }
+
+}
