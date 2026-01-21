@@ -7,10 +7,10 @@
 # - 所有用户：必须通过 MR，只能修改自己的 stubs/{app_id}/
 #
 # Executor: docker
-# Image: python:3.13
+# Image: jilianyi/ultraview_ci:v1
 # ============================================================
 
-image: python:3.13
+image: jilianyi/ultraview_ci:v1
 
 stages:
   - validate
