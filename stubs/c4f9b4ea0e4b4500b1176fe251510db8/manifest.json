@@ -1,0 +1,21 @@
+{
+  "id": "c4f9b4ea0e4b4500b1176fe251510db8",
+  "name": "UltraOrbit",
+  "description": "UltraOrbit is a low-code platform for creating custom workflows and automations.",
+  "latest": "0.2.7",
+  "tags": [
+    {
+      "version": "0.2.7",
+      "mappings": {
+        "backend": "backend/stub",
+        "frontend": "frontend/src/stub"
+      }
+    }
+  ],
+  "maintainers": [
+    {
+      "type": "group",
+      "name": "UltraVIEW"
+    }
+  ]
+}
