@@ -1,0 +1,21 @@
+{
+  "id": "de34fa54b2c342b6b2afc496b819d285",
+  "name": "uvapp_srv_daemonworker",
+  "description": "",
+  "latest": "0.2.5",
+  "tags": [
+    {
+      "version": "0.2.5",
+      "mappings": {
+        "backend": "backend/stub",
+        "frontend": "frontend/src/stub"
+      }
+    }
+  ],
+  "maintainers": [
+    {
+      "type": "group",
+      "name": "UltraVIEW"
+    }
+  ]
+}
