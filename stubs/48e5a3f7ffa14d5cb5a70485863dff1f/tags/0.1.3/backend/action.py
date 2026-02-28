@@ -1,0 +1,80 @@
+# Python Action Stub
+#
+# Generated at: 2026-02-28 08:42:10
+# SDK Version: 0.12.10
+# App Name: uvapp_srv_licenseworker
+# App Version: 0.1.3
+# Author: RIGOL Technology
+#
+# This file is auto-generated. Do not edit manually.
+
+from typing import Any, List, Dict, Optional, Union, Tuple
+from pydantic import BaseModel
+from uvapi import BaseActionProxy
+from uvapi.modules import ActionInfo, AppConfig, AppDisplayConfig, AppDisplayInfo, AppRuntimeConfig
+
+
+class LicenseImportResponse(BaseModel):
+    """导入 License 的响应模型"""
+
+    success: "bool"
+    message: "str"
+    remaining_days: "Optional[float]"
+
+
+class LicenseVerifyResponse(BaseModel):
+    """License 校验结果的响应模型"""
+
+    success: "bool"
+    message: "str"
+    remaining_days: "Optional[float]"
+    error_code: "Optional[str]"
+
+
+class ActionProxy(BaseActionProxy):
+    """Action Proxy for RPC-like calls"""
+
+    def __init__(self, target_id: str = '48e5a3f7ffa14d5cb5a70485863dff1f', service=None):
+        super().__init__(target_id, service)
+        # 设置每个 action 的返回类型映射
+        self._action_return_types = {
+            'get_app_config': AppConfig,
+            'import_license': LicenseImportResponse,
+            'verify_license': LicenseVerifyResponse,
+        }
+
+    def get_app_config(self) -> "AppConfig":
+        """get app info"""
+        return self('get_app_config')
+
+    def get_all_action_details(self) -> "Dict[str, ActionInfo]":
+        """get app action details"""
+        return self('get_all_action_details')
+
+    def get_all_attribute_groups(self) -> "List[str]":
+        """get all attribute groups"""
+        return self('get_all_attribute_groups')
+
+    def trig_attributes_snapshot(self, group_name: "str") -> "bool":
+        """trigger once attributes snapshot push for a group"""
+        return self('trig_attributes_snapshot', group_name=group_name)
+
+    def get_attribute(self, attribute_path: "str") -> "Any":
+        """get attribute value by path"""
+        return self('get_attribute', attribute_path=attribute_path)
+
+    def set_attribute(self, attribute_path: "str", value: "Any") -> "bool":
+        """set attribute value by path"""
+        return self('set_attribute', attribute_path=attribute_path, value=value)
+
+    def get_machine_id(self) -> "Dict[str, str]":
+        """获取机器码"""
+        return self('get_machine_id', _timeout=10)
+
+    def import_license(self, filename: "str", file_content: "Any") -> "LicenseImportResponse":
+        """导入平台 License"""
+        return self('import_license', filename=filename, file_content=file_content, _timeout=30)
+
+    def verify_license(self) -> "LicenseVerifyResponse":
+        """验证平台 License"""
+        return self('verify_license', _timeout=20)
