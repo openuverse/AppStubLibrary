@@ -2,13 +2,20 @@
   "id": "d0a9a7f6473948c6b5ee204c4d4dea10",
   "name": "UltraSigma",
   "description": "Professional test and measurement instrument management software with automatic discovery, unified management, and real-time monitoring capabilities",
-  "latest": "0.1.8",
+  "latest": "0.1.10",
   "tags": [
     {
       "version": "0.1.8",
       "mappings": {
         "backend": "backend/stub",
         "frontend": "frontend/src/stub"
+      }
+    },
+    {
+      "version": "0.1.10",
+      "mappings": {
+        "backend": "stub",
+        "frontend": "src/stub"
       }
     }
   ],
@@ -20,6 +27,10 @@
     {
       "type": "user",
       "name": "sn06345"
+    },
+    {
+      "type": "user",
+      "name": "sn06473"
     }
   ]
 }
