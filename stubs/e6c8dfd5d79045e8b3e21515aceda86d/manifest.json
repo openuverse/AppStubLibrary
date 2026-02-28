@@ -1,0 +1,24 @@
+{
+  "id": "e6c8dfd5d79045e8b3e21515aceda86d",
+  "name": "uv_srv_messagebus",
+  "description": "",
+  "latest": "0.5.1",
+  "tags": [
+    {
+      "version": "0.5.1",
+      "mappings": {
+        "backend": "stub"
+      }
+    }
+  ],
+  "maintainers": [
+    {
+      "type": "user",
+      "name": "sn06473"
+    },
+    {
+      "type": "user",
+      "name": "sn06356"
+    }
+  ]
+}
