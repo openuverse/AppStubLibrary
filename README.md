@@ -13,7 +13,7 @@
 | 📁 **路径映射** | 每个版本支持配置文件夹到目标路径的映射 |
 | 🔐 **权限隔离** | 每个仓库只能修改自己的目录 |
 | 🔒 **版本不可变** | 已发布版本内容不可修改 |
-| 👥 **用户/群组权限** | 支持 GitLab 用户和群组权限控制 |
+| 👥 **用户权限** | 基于 GitLab 用户名的权限控制 |
 | 🤖 **CI 自动化** | 自动生成索引和权限配置 |
 | 🌐 **公开访问** | 公开仓库，所有用户可提交 MR |
 
@@ -53,19 +53,16 @@ appstublibrary/
 │                   ├── __init__.py
 │                   └── action.py
 ├── admin/                  # 管理子模块（私有，仅管理员可见）
-│   ├── .gitlab-ci.yml
 │   ├── CODEOWNERS
 │   ├── README.md
 │   └── scripts/
-│       ├── main/
-│       │   ├── validate-ownership.py
-│       │   ├── validate-manifest.py
-│       │   ├── validate-files.py
-│       │   ├── generate-index.py
-│       │   ├── generate-codeowners.py
-│       │   └── commit-changes.py
-│       └── local/
-│           └── validate-codeowners.py
+│       └── main/
+│           ├── validate-ownership.py
+│           ├── validate-manifest.py
+│           ├── validate-files.py
+│           ├── generate-index.py
+│           ├── generate-codeowners.py
+│           └── commit-changes.py
 └── README.md               # 本文件
 ```
 
@@ -95,14 +92,13 @@ appstublibrary/
     {
       "version": "0.0.1",
       "mappings": {
-        "frontend": "frontend/src/stub",
-        "backend": "backend/stub"
+        "frontend": "src/stub",
+        "backend": "stub"
       }
     }
   ],
   "maintainers": [
-    { "type": "user", "name": "zhangsan" },
-    { "type": "group", "name": "UltraVIEW" }
+    { "type": "user", "name": "zhangsan" }
   ]
 }
 ```
@@ -115,7 +111,7 @@ appstublibrary/
 | `name` | string | ✅ | 显示名称（可重复） |
 | `latest` | string | ✅ | 最新版本号，必须在 tags 中 |
 | `tags` | array | ✅ | 版本列表，每个元素包含 version 和 mappings |
-| `maintainers` | array | ✅ | 维护者列表（用户/群组） |
+| `maintainers` | array | ✅ | 维护者列表（仅支持用户） |
 | `description` | string | | 描述（可选） |
 
 ### tags 格式
@@ -129,21 +125,21 @@ appstublibrary/
 
 **mappings 说明**：
 - key：`tags/{version}/` 下的文件夹名（如 `frontend`、`backend`）
-- value：目标项目中的安装路径（如 `frontend/src/stub`）
+- value：目标项目中对应模块内的相对安装路径（如 `src/stub`、`stub`）
 
 **示例**：
 ```json
 {
   "version": "0.0.1",
   "mappings": {
-    "frontend": "frontend/src/stub",
-    "backend": "backend/stub"
+    "frontend": "src/stub",
+    "backend": "stub"
   }
 }
 ```
 上述配置表示：
-- `tags/0.0.1/frontend/` 的内容会被安装到目标项目的 `frontend/src/stub/`
-- `tags/0.0.1/backend/` 的内容会被安装到目标项目的 `backend/stub/`
+- `tags/0.0.1/frontend/` 的内容会被安装到目标项目 frontend 模块的 `src/stub/`
+- `tags/0.0.1/backend/` 的内容会被安装到目标项目 backend 模块的 `stub/`
 
 ### maintainers 格式
 
@@ -151,14 +147,13 @@ appstublibrary/
 {
   "maintainers": [
     { "type": "user", "name": "zhangsan" },
-    { "type": "group", "name": "UltraVIEW" },
-    { "type": "group", "name": "UltraVIEW/Backend" }
+    { "type": "user", "name": "lisi" }
   ]
 }
 ```
 
-- `type`: `user`（用户）或 `group`（群组）
-- `name`: GitLab 用户名或群组路径（从 URL 获取）
+- `type`: 必须为 `user`
+- `name`: GitLab 用户名（即登录账号）
 
 ---
 
@@ -267,15 +262,15 @@ git push origin your-branch
         {
           "version": "0.0.1",
           "mappings": {
-            "frontend": "frontend/src/stub",
-            "backend": "backend/stub"
+            "frontend": "src/stub",
+            "backend": "stub"
           }
         },
         {
           "version": "0.0.2",
           "mappings": {
-            "frontend": "frontend/src/stub",
-            "backend": "backend/stub"
+            "frontend": "src/stub",
+            "backend": "stub"
           }
         }
       ],
@@ -324,10 +319,6 @@ git push origin your-branch
 
 CI 会从提交中的 `manifest.json` 读取 `maintainers` 进行权限验证，无需预先配置。
 
-### Q: 群组名怎么获取？
-
-从 GitLab URL 获取，如 `http://bjrdgit.rigoltech.com/UltraVIEW`，群组名是 `UltraVIEW`。
-
 ### Q: 为什么看不到 admin 目录？
 
 `admin/` 是私有子模块，仅管理员可见。普通成员 clone 时不会获取该目录。
@@ -338,8 +329,9 @@ CI 会从提交中的 `manifest.json` 读取 `maintainers` 进行权限验证，
 
 ### Q: mappings 是什么意思？
 
-mappings 定义了文件夹到目标路径的映射关系。例如：
-- `"frontend": "frontend/src/stub"` 表示 `tags/{version}/frontend/` 的内容会被安装到目标项目的 `frontend/src/stub/` 目录
+mappings 定义了文件夹到目标模块内相对路径的映射关系。例如：
+- `"frontend": "src/stub"` 表示 `tags/{version}/frontend/` 的内容会被安装到目标项目 frontend 模块的 `src/stub/` 目录
+- `"backend": "stub"` 表示 `tags/{version}/backend/` 的内容会被安装到目标项目 backend 模块的 `stub/` 目录
 
 ### Q: 为什么 CI 报错 "不能往已发布版本新增文件"？
 
@@ -347,7 +339,7 @@ mappings 定义了文件夹到目标路径的映射关系。例如：
 
 ### Q: 任何人都可以提交吗？
 
-是的，这是公开仓库。任何 GitLab 用户都可以通过 MR 方式提交。在 `manifest.json` 的 `maintainers` 中添加自己即可获得对应目录的修改权限。
+是的，这是公开仓库。任何 GitLab 用户都可以通过 MR 方式提交。在 `manifest.json` 的 `maintainers` 中添加自己的用户名即可获得对应目录的修改权限。
 
 ---
 
