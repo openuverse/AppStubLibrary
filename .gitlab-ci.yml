@@ -98,10 +98,10 @@ generate-configs:
     - git submodule update --init --recursive
   script:
     - echo "Generating config files..."
-    - echo "1. Generating index.json..."
-    - python admin/scripts/main/generate-index.py
-    - echo "2. Generating CODEOWNERS..."
+    - echo "1. Generating CODEOWNERS..."
     - python admin/scripts/main/generate-codeowners.py
+    - echo "2. Generating index.json..."
+    - python admin/scripts/main/generate-index.py
     - echo "3. Committing and pushing changes..."
     - python admin/scripts/main/commit-changes.py --stub-token="${STUB_WRITE_TOKEN}" --admin-token="${PROJECT_WRITE_TOKEN}"
   allow_failure: false
