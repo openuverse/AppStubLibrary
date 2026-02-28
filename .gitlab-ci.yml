@@ -37,7 +37,6 @@ validate-ownership:
     - git submodule update --init --recursive
   script:
     - echo "Validating file permissions..."
-    - if [ -n "$GITLAB_API_TOKEN" ]; then echo "[DEBUG] GITLAB_API_TOKEN is set (length=${#GITLAB_API_TOKEN})"; else echo "[DEBUG] GITLAB_API_TOKEN is NOT set"; fi
     - python admin/scripts/main/validate-ownership.py
   allow_failure: false
 
