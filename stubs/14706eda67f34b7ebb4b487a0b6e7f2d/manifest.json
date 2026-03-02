@@ -2,7 +2,7 @@
   "id": "14706eda67f34b7ebb4b487a0b6e7f2d",
   "name": "Nexus",
   "description": "Nexus is the app manager to browse, install, update, launch, and uninstall applications.",
-  "latest": "0.2.1",
+  "latest": "0.2.2",
   "tags": [
     {
       "version": "0.2.0",
@@ -13,6 +13,13 @@
     },
     {
       "version": "0.2.1",
+      "mappings": {
+        "backend": "stub",
+        "frontend": "src/stub"
+      }
+    },
+    {
+      "version": "0.2.2",
       "mappings": {
         "backend": "stub",
         "frontend": "src/stub"
