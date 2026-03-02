@@ -2,12 +2,19 @@
   "id": "01bfa07867bc4b09a323fce50b0cfd2b",
   "name": "uvapp_srv_sequenceworker",
   "description": "",
-  "latest": "0.1.5",
+  "latest": "0.1.6",
   "tags": [
     {
       "version": "0.1.5",
       "mappings": {
         "backend": "stub"
+      }
+    },
+    {
+      "version": "0.1.6",
+      "mappings": {
+        "backend": "stub",
+        "frontend": "src/stub"
       }
     }
   ],
