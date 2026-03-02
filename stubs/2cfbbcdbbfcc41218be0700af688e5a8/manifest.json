@@ -2,12 +2,19 @@
   "id": "2cfbbcdbbfcc41218be0700af688e5a8",
   "name": "uvapp_srv_apiworker",
   "description": "",
-  "latest": "0.5.4",
+  "latest": "0.5.5",
   "tags": [
     {
       "version": "0.5.4",
       "mappings": {
         "backend": "stub"
+      }
+    },
+    {
+      "version": "0.5.5",
+      "mappings": {
+        "backend": "stub",
+        "frontend": "src/stub"
       }
     }
   ],
