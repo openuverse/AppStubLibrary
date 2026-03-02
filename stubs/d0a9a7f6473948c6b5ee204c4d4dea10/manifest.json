@@ -2,10 +2,17 @@
   "id": "d0a9a7f6473948c6b5ee204c4d4dea10",
   "name": "Atlas",
   "description": "Professional test and measurement instrument management software with automatic discovery, unified management, and real-time monitoring capabilities",
-  "latest": "0.1.10",
+  "latest": "0.1.11",
   "tags": [
     {
       "version": "0.1.10",
+      "mappings": {
+        "backend": "stub",
+        "frontend": "src/stub"
+      }
+    },
+    {
+      "version": "0.1.11",
       "mappings": {
         "backend": "stub",
         "frontend": "src/stub"
