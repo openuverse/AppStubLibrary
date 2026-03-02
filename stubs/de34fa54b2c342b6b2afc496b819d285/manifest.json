@@ -2,7 +2,7 @@
   "id": "de34fa54b2c342b6b2afc496b819d285",
   "name": "uvapp_srv_daemonworker",
   "description": "",
-  "latest": "0.2.7",
+  "latest": "0.2.8",
   "tags": [
     {
       "version": "0.2.5",
@@ -13,6 +13,13 @@
     },
     {
       "version": "0.2.7",
+      "mappings": {
+        "backend": "stub",
+        "frontend": "src/stub"
+      }
+    },
+    {
+      "version": "0.2.8",
       "mappings": {
         "backend": "stub",
         "frontend": "src/stub"
