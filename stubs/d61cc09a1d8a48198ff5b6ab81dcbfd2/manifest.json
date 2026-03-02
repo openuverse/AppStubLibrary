@@ -1,0 +1,25 @@
+{
+  "id": "d61cc09a1d8a48198ff5b6ab81dcbfd2",
+  "name": "uvapp_srv_aiworker",
+  "description": "",
+  "latest": "0.1.4",
+  "tags": [
+    {
+      "version": "0.1.4",
+      "mappings": {
+        "backend": "stub",
+        "frontend": "src/stub"
+      }
+    }
+  ],
+  "maintainers": [
+    {
+      "type": "user",
+      "name": "sn06473"
+    },
+    {
+      "type": "user",
+      "name": "sn06447"
+    }
+  ]
+}
