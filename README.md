@@ -1,91 +1,43 @@
-# appstublibrary
+# AppStubLibrary
 
-用于收集和管理多个源仓库接口文件的中央仓库。
-
-> **公开仓库**：所有用户都可以通过 MR 方式提交代码。
+用于收集多个应用接口文件的中央仓库。每个应用在 `stubs/{app_id}/` 下按版本存放接口文件，并在 `manifest.json` 里声明版本和安装路径。
 
 ## 功能概览
 
 | 功能 | 说明 |
 |-----|------|
-| 📦 **多仓库接口文件管理** | 集中存储多个源仓库的接口文件 |
-| 🏷️ **版本管理** | 支持按版本 tag 组织，支持 `latest` 标记 |
-| 📁 **路径映射** | 每个版本支持配置文件夹到目标路径的映射 |
-| 🔐 **权限隔离** | 每个仓库只能修改自己的目录 |
-| 🔒 **版本不可变** | 已发布版本内容不可修改 |
-| 👥 **用户权限** | 基于 GitLab 用户名的权限控制 |
-| 🤖 **CI 自动化** | 自动生成索引和权限配置 |
-| 🌐 **公开访问** | 公开仓库，所有用户可提交 MR |
-
----
-
-## 权限规则
-
-| 用户类型 | push | MR | 可修改范围 |
-|---------|------|-----|-----------|
-| **管理员** @sn06473 @sn06009 @sn04646 @sn03185 | ✅ | ✅ | 所有文件 |
-| **CI Bot** @project_338_bot | ✅ | ❌ | 仅 index.json |
-| **所有用户** | ❌ | ✅ | 仅自己的 `stubs/{app_id}/` |
-
-> **公开仓库**：任何 GitLab 用户都可以通过 MR 提交代码，只需在 `manifest.json` 的 `maintainers` 中添加自己即可获得对应目录的修改权限。
-
-> **版本保护**：已发布版本 (`stubs/{id}/tags/{version}/`) 内容不可修改、删除或重命名，如需修复请发布新版本。
-
----
+| 多仓库接口文件管理 | 集中存储多个应用的接口文件 |
+| 版本管理 | 按版本目录组织，并标记 `latest` |
+| 路径映射 | 每个版本可以把文件夹映射到目标工程中的安装路径 |
+| 目录隔离 | 每个应用只维护自己的目录 |
+| 版本不可变 | 已发布版本的内容不能再改 |
 
 ## 目录结构
 
 ```
-appstublibrary/
-├── index.json              # 全局索引文件（CI 自动生成）
-├── index.schema.json       # 索引文件格式定义
-├── .gitlab-ci.yml          # CI/CD 配置
-├── .gitmodules             # 子模块配置
-├── stubs/                  # 接口文件目录（所有成员可见）
+AppStubLibrary/
+├── index.json              # 全局索引
+├── index.schema.json       # 索引格式
+├── stubs/                  # 接口文件
 │   └── {app_id}/
-│       ├── manifest.json   # 仓库元信息
+│       ├── manifest.json   # 应用元信息
 │       └── tags/
 │           └── {version}/  # 版本目录
-│               ├── frontend/       # 映射文件夹
+│               ├── frontend/
 │               │   ├── actions.ts
 │               │   └── attributes.ts
-│               └── backend/        # 映射文件夹
+│               └── backend/
 │                   ├── __init__.py
 │                   └── action.py
-├── admin/                  # 管理子模块（私有，仅管理员可见）
-│   ├── CODEOWNERS
-│   ├── README.md
-│   └── scripts/
-│       └── main/
-│           ├── validate-ownership.py
-│           ├── validate-manifest.py
-│           ├── validate-files.py
-│           ├── generate-index.py
-│           ├── generate-codeowners.py
-│           └── commit-changes.py
-└── README.md               # 本文件
+└── README.md
 ```
-
----
-
-## 文件可见性
-
-| 文件/目录 | 所有成员 | 仅管理员 |
-|----------|---------|---------|
-| `index.json` | ✅ 可见 | ✅ |
-| `stubs/` | ✅ 可见 | ✅ |
-| `admin/`（子模块） | ❌ 不可见 | ✅ 可见 |
-
-> 注意：`admin/` 是一个私有 Git 子模块，非管理员 clone 时不会获取该目录内容。
-
----
 
 ## manifest.json 格式
 
 ```json
 {
   "id": "your-app-id",
-  "name": "仓库显示名称",
+  "name": "应用显示名称",
   "description": "可选描述",
   "latest": "0.0.1",
   "tags": [
@@ -98,7 +50,7 @@ appstublibrary/
     }
   ],
   "maintainers": [
-    { "type": "user", "name": "zhangsan" }
+    { "type": "user", "name": "your-name" }
   ]
 }
 ```
@@ -107,27 +59,22 @@ appstublibrary/
 
 | 字段 | 类型 | 必填 | 说明 |
 |-----|------|-----|------|
-| `id` | string | ✅ | 仓库唯一标识，必须与目录名一致 |
-| `name` | string | ✅ | 显示名称（可重复） |
-| `latest` | string | ✅ | 最新版本号，必须在 tags 中 |
-| `tags` | array | ✅ | 版本列表，每个元素包含 version 和 mappings |
-| `maintainers` | array | ✅ | 维护者列表（仅支持用户） |
-| `description` | string | | 描述（可选） |
+| `id` | string | 是 | 应用唯一标识，必须与目录名一致 |
+| `name` | string | 是 | 显示名称 |
+| `latest` | string | 是 | 最新版本号，必须出现在 `tags` 中 |
+| `tags` | array | 是 | 版本列表，每个元素包含 `version` 和 `mappings` |
+| `maintainers` | array | 是 | 维护者列表，只支持用户 |
+| `description` | string | 否 | 描述 |
 
 ### tags 格式
 
-每个 tag 是一个对象，包含：
-
 | 字段 | 类型 | 必填 | 说明 |
 |-----|------|-----|------|
-| `version` | string | ✅ | 版本号，对应 `tags/{version}/` 目录 |
-| `mappings` | object | ✅ | 路径映射，key 是目录名，value 是目标安装路径 |
+| `version` | string | 是 | 版本号，对应 `tags/{version}/` 目录 |
+| `mappings` | object | 是 | 路径映射。key 是版本目录下的文件夹名，value 是安装到目标工程中的相对路径 |
 
-**mappings 说明**：
-- key：`tags/{version}/` 下的文件夹名（如 `frontend`、`backend`）
-- value：目标项目中对应模块内的相对安装路径（如 `src/stub`、`stub`）
+示例：
 
-**示例**：
 ```json
 {
   "version": "0.0.1",
@@ -137,64 +84,45 @@ appstublibrary/
   }
 }
 ```
-上述配置表示：
-- `tags/0.0.1/frontend/` 的内容会被安装到目标项目 frontend 模块的 `src/stub/`
-- `tags/0.0.1/backend/` 的内容会被安装到目标项目 backend 模块的 `stub/`
+
+这表示：
+
+- `tags/0.0.1/frontend/` 会安装到目标工程前端的 `src/stub/`
+- `tags/0.0.1/backend/` 会安装到目标工程后端的 `stub/`
 
 ### maintainers 格式
 
 ```json
 {
   "maintainers": [
-    { "type": "user", "name": "zhangsan" },
-    { "type": "user", "name": "lisi" }
+    { "type": "user", "name": "your-name" }
   ]
 }
 ```
 
-- `type`: 必须为 `user`
-- `name`: GitLab 用户名（即登录账号）
+- `type` 必须为 `user`
+- `name` 是维护者名称
 
----
+## 版本目录要求
 
-## 版本目录结构要求
+每个 `tags/{version}/` 需要满足：
 
-每个版本目录 (`tags/{version}/`) 必须满足：
+1. 文件放在子文件夹里，不要直接放在版本目录下
+2. 子文件夹与 `mappings` 的 key 一一对应
+3. 每个子文件夹里都要有文件
+4. 不要使用符号链接
 
-1. **不能直接放文件**：所有文件必须放在子文件夹中
-2. **子文件夹与 mappings 一一对应**：mappings 的 key 必须与实际目录名匹配
-3. **每个子文件夹必须有文件**：不允许空文件夹
-4. **不允许符号链接**
-
-正确示例：
 ```
 tags/0.0.1/
-├── frontend/           # 对应 mappings["frontend"]
+├── frontend/
 │   ├── actions.ts
 │   └── attributes.ts
-└── backend/            # 对应 mappings["backend"]
+└── backend/
     ├── __init__.py
     └── action.py
 ```
 
-错误示例：
-```
-tags/0.0.1/
-├── actions.ts          # ❌ 不能直接放文件
-└── frontend/
-```
-
----
-
-## 接入流程
-
-> **公开仓库**：任何 GitLab 用户都可以通过以下流程接入。
-
-### 新建仓库
-
-1. **Fork 本仓库或创建分支**
-
-2. **创建仓库目录和 manifest.json**
+## 如何提交一个应用
 
 ```
 stubs/your-app-id/
@@ -207,142 +135,22 @@ stubs/your-app-id/
             └── action.py
 ```
 
-3. **提交 MR**
+在 `manifest.json` 的 `maintainers` 里写上维护者。已发布版本不能修改、删除或重命名；需要修正时请新增一个版本，例如 `0.0.2`。
 
-```bash
-git add stubs/your-app-id/
-git commit -m "feat: add your-app-id v0.0.1"
-git push origin your-branch
-# 在 GitLab 上创建 MR
-```
+## index.json
 
-4. **等待 CI 验证**
-   - 验证权限（validate-ownership）
-   - 验证 manifest 格式（validate-manifest）
-   - 验证目录结构（validate-files）
-
-5. **合并后 CI 自动处理**
-   - 自动生成 index.json
-   - 自动生成 CODEOWNERS
-
----
-
-## CI/CD 流程
-
-### 验证阶段（push 和 MR 都执行）
-
-| 任务 | 说明 | 失败阻塞 |
-|-----|------|---------|
-| `validate-ownership` | 验证提交者权限、版本不可变性 | ✅ |
-| `validate-manifest` | 验证 manifest.json 格式和必填字段 | ✅ |
-| `validate-files` | 验证目录结构和安全检查 | ✅ |
-
-### 部署阶段（合并后，stubs/ 有变化时执行）
-
-| 任务 | 说明 |
-|-----|------|
-| `generate-configs` | 自动生成 index.json 和 CODEOWNERS |
-
----
-
-## index.json 格式（CI 自动生成）
-
-```json
-{
-  "$schema": "./index.schema.json",
-  "version": "1.0.0",
-  "updated_at": "2026-01-15T00:00:00Z",
-  "repos": [
-    {
-      "id": "app-a",
-      "name": "仓库A",
-      "description": "描述",
-      "latest": "0.0.2",
-      "tags": [
-        {
-          "version": "0.0.1",
-          "mappings": {
-            "frontend": "src/stub",
-            "backend": "stub"
-          }
-        },
-        {
-          "version": "0.0.2",
-          "mappings": {
-            "frontend": "src/stub",
-            "backend": "stub"
-          }
-        }
-      ],
-      "maintainers": [
-        { "type": "user", "name": "zhangsan" }
-      ]
-    }
-  ]
-}
-```
-
----
-
-## GitLab 配置要求
-
-### 主仓库（appstublibrary）
-
-**分支保护** (Settings → Repository → Protected branches)
-
-| 设置 | 值 |
-|-----|-----|
-| Branch | `master` |
-| Allowed to merge | `Developers + Maintainers` |
-| Allowed to push | `Maintainers` |
-
-**CI/CD 变量** (Settings → CI/CD → Variables)
-
-| 变量 | 用途 |
-|-----|------|
-| `DEPLOY_TOKEN` | 克隆 admin 子模块 |
-| `STUB_WRITE_TOKEN` | 推送 index.json |
-| `PROJECT_WRITE_TOKEN` | 推送 CODEOWNERS |
-
-### 私有子模块（appstubadmin）
-
-| 设置 | 值 |
-|-----|-----|
-| Visibility | Private |
-| Members | @sn06473, @sn06009, @sn04646, @sn03185 |
-
----
+`index.json` 由仓库维护流程生成，汇总每个应用的 `id`、`name`、`latest`、`tags` 和 `maintainers`。格式见 `index.schema.json`。
 
 ## 常见问题
 
-### Q: 新仓库首次提交时如何获得权限？
+### 如何更新已发布的版本？
 
-CI 会从提交中的 `manifest.json` 读取 `maintainers` 进行权限验证，无需预先配置。
+已发布版本的内容不能改。请新增一个版本，例如 `0.0.2`，并把 `latest` 指到它。
 
-### Q: 为什么看不到 admin 目录？
+### mappings 是什么？
 
-`admin/` 是私有子模块，仅管理员可见。普通成员 clone 时不会获取该目录。
+它声明版本目录中的文件夹要安装到目标工程的哪个相对路径。例如 `"frontend": "src/stub"` 表示 `tags/{version}/frontend/` 安装到前端工程的 `src/stub/`。
 
-### Q: 如何更新已发布的版本？
+### 为什么不能往已发布版本里加文件？
 
-**已发布版本内容不可修改**。如需修复，请发布新版本（如 `0.0.2`）。
-
-### Q: mappings 是什么意思？
-
-mappings 定义了文件夹到目标模块内相对路径的映射关系。例如：
-- `"frontend": "src/stub"` 表示 `tags/{version}/frontend/` 的内容会被安装到目标项目 frontend 模块的 `src/stub/` 目录
-- `"backend": "stub"` 表示 `tags/{version}/backend/` 的内容会被安装到目标项目 backend 模块的 `stub/` 目录
-
-### Q: 为什么 CI 报错 "不能往已发布版本新增文件"？
-
-版本一旦发布，其目录内容不可变。不能新增、修改、删除或重命名文件。请创建新版本。
-
-### Q: 任何人都可以提交吗？
-
-是的，这是公开仓库。任何 GitLab 用户都可以通过 MR 方式提交。在 `manifest.json` 的 `maintainers` 中添加自己的用户名即可获得对应目录的修改权限。
-
----
-
-## 联系方式
-
-如有问题，请联系管理员 @sn06473 @sn06009 @sn04646 @sn03185 或提交 Issue。
+版本一旦发布，目录内容就固定了。不能新增、修改、删除或重命名其中的文件。请创建新版本。
