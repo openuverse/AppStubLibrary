@@ -1,3 +1,3 @@
 [submodule "admin"]
 	path = admin
-	url = git@bjrdgit.rigoltech.com:openuv/appstubadmin.git
+	url = https://github.com/openuverse/AppStubAdmin.git
